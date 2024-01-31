@@ -1,0 +1,24 @@
+#version: '3.9'
+
+services:
+  pxeboot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pxeboot
+    restart: always
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    volumes:
+      - /home/rnascunha/data/images:/tftpboot/images
+      - nfsimages:/tftpboot/images/ubuntu
+
+volumes:
+  nfsimages:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=192.168.0.2,ro
+      device: :/home/rnascunha/data/images/ubuntu

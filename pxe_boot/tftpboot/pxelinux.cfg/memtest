@@ -1,0 +1,15 @@
+LABEL memtest86-32
+  MENU LABEL Memtest86+ 32-BIN
+  KERNEL memtest/memtest32.bin
+
+LABEL memtest86-32-efi
+  MENU LABEL Memtest86+ 32-EFI
+  KERNEL /memtest/memtest32.efi
+
+LABEL memtest86-64
+  MENU LABEL Memtest86+ 64-BIN
+  KERNEL /memtest/memtest64.bin
+
+LABEL memtest86-64-efi
+  MENU LABEL Memtest86+ 64-EFI
+  KERNEL /memtest/memtest64.efi
