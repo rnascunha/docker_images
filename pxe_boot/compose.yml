@@ -12,13 +12,13 @@ services:
       - NET_ADMIN
       - SYS_ADMIN
     volumes:
-      - /home/rnascunha/data/images:/tftpboot/images
-      - nfsimages:/tftpboot/images/ubuntu
+      - ${IMAGES_PATH}:/tftpboot/images
+#      - nfsimages:/tftpboot/images/ubuntu
 
-volumes:
-  nfsimages:
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=192.168.0.2,ro
-      device: :/home/rnascunha/data/images/ubuntu
+# volumes:
+#   nfsimages:
+#     driver: local
+#     driver_opts:
+#       type: nfs
+#       o: addr=192.168.0.2,ro
+#       device: :/home/rnascunha/data/images/ubuntu

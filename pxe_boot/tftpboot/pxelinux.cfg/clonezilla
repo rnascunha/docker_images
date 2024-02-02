@@ -1,5 +1,5 @@
 label clonezilla-live
   MENU LABEL Clonezilla Live (Ramdisk)
-  KERNEL /images/clonezilla-live-20231102-mantic-amd64/live/vmlinuz
-  INITRD /images/clonezilla-live-20231102-mantic-amd64/live/initrd.img
+  KERNEL images/clonezilla-live-20231102-mantic-amd64/live/vmlinuz
+  INITRD images/clonezilla-live-20231102-mantic-amd64/live/initrd.img
   APPEND boot=live username=user union=overlay config components quiet noswap edd=on nomodeset nodmraid locales= keyboard-layouts= ocs_live_run="ocs-live-general" ocs_live_extra_param="" ocs_live_batch=no net.ifnames=0 nosplash noprompt fetch=tftp://192.168.0.2/images/clonezilla-live-20231102-mantic-amd64/live/filesystem.squashfs

@@ -1,10 +1,9 @@
 MENU TITLE PXE Boot
 
-# DEFAULT install
 LABEL ubuntu-23.10-netboot
   MENU LABEL Ubuntu 23.10 Server live install
-  KERNEL /images/ubuntu-23.10-netboot-amd64/amd64/linux
-  INITRD /images/ubuntu-23.10-netboot-amd64/amd64/initrd
+  KERNEL images/ubuntu-23.10-netboot-amd64/amd64/linux
+  INITRD images/ubuntu-23.10-netboot-amd64/amd64/initrd
   APPEND root=/dev/ram0 ramdisk_size=2000000 ip=dhcp iso-url=https://releases.ubuntu.com/23.10/ubuntu-23.10-live-server-amd64.iso ---
   TEXT HELP
     Install Ubuntu 23.10 downloading from site.
@@ -12,8 +11,8 @@ LABEL ubuntu-23.10-netboot
 
 LABEL ubuntu-23.10.1
   MENU LABEL Ubuntu 23.10.1
-  KERNEL /images/ubuntu/casper/vmlinuz
-  INITRD /images/ubuntu/casper/initrd
+  KERNEL images/ubuntu/casper/vmlinuz
+  INITRD images/ubuntu/casper/initrd
   APPEND nfsroot=192.168.0.2:/tftpboot/images/ubuntu ro netboot=nfs boot=casper ip=dhcp ---
   TEXT HELP
     Install Ubuntu 23.10.1 from local NFS
@@ -21,8 +20,8 @@ LABEL ubuntu-23.10.1
 
 LABEL window-11-23h2x64
   MENU LABEL Windows 11 23H2 x64v2 PTBR 
-  KERNEL /memdisk
-  INITRD /images/winpe_amd64.iso
+  KERNEL kernel/memdisk
+  INITRD images/winpe_amd64.iso
   APPEND iso raw
   TEXT HELP
     Install Windows 11
