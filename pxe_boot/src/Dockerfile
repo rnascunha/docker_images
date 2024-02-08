@@ -7,4 +7,3 @@ COPY tftpboot/ /tftpboot/
 COPY etc/ /etc
 COPY --chmod=755 run.alpine.sh /run.sh
 ENTRYPOINT [ "/run.sh" ]
-# ENTRYPOINT [ "ash" ]

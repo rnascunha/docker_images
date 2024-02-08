@@ -13,7 +13,7 @@ LABEL ubuntu-23.10.1
   MENU LABEL Ubuntu 23.10.1
   KERNEL images/ubuntu/casper/vmlinuz
   INITRD images/ubuntu/casper/initrd
-  APPEND nfsroot=192.168.0.2:/tftpboot/images/ubuntu ro netboot=nfs boot=casper ip=dhcp ---
+  APPEND nfsroot={{SERVER_IP}}:/tftpboot/images/ubuntu ro netboot=nfs boot=casper ip=dhcp ---
   TEXT HELP
     Install Ubuntu 23.10.1 from local NFS
   ENDTEXT

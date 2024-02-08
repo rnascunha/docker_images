@@ -1,0 +1,41 @@
+#version: '3.9'
+
+services:
+  pxeboot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pxeboot
+    restart: always
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    env_file:
+      - .env
+    volumes:
+      - ${IMAGES_PATH}:/tftpboot/images
+
+  nfs:
+    image: erichough/nfs-server
+    container_name: nfs_images
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ${IMAGES_PATH}:/tftpboot/images
+      - ./exports:/etc/exports:ro
+      - /lib/modules:/lib/modules:ro
+    privileged: true
+    network_mode: host
+    # ports:
+    #     - 2049:2049
+    #     - 2049:2049/udp
+    #     - 111:111
+    #     - 111:111/udp
+    #     - 32765:32765
+    #     - 32765:32765/udp
+    #     - 32767:32767
+    #     - 32767:32767/udp
+    # environment:
+    #   - NFS_LOG_LEVEL=DEBUG

@@ -1,0 +1,5 @@
+src/.env
+src/tftpboot/pxelinux.cfg/default
+src/tftpboot/pxelinux.cfg/clonezilla
+src/tftpboot/pxelinux.cfg/gparted
+src/etc/dnsmasq.conf
