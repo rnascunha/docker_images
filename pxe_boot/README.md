@@ -9,7 +9,7 @@
 
 As you will run a DHCP server, you must configure your local network parameters.
 
-> :warning: As you are going to run your own DHCP and DNS server, you must disable this services if running at your network.
+> :warning: You must disable any DHCP/DNS server service if there is one running at your local network.
 
 Open the `scripts/config.sh` script and change the following variables:
 ```bash
@@ -59,13 +59,13 @@ config.sh -h|
 
 ### Images
 
-You need to download and unpack all the images files of the tools or OSs that you want to boot at a directory. Set this folder at the `.env` file (done by the `scrpits/config.sh` script), `IMAGES_PATH` property. This folder will be mapped inside the container to the `/tftpboot/images` directory.
+You need to download and unpack all the images files of the tools/OSs that you want to boot at a directory. Set this folder at the `.env` file (done by the `scrpits/config.sh` script), `IMAGES_PATH` property. This folder will be mapped inside the container to the `/tftpboot/images` directory.
 
-You also need to configure the menu and boot parameters of the images that you download and put at `tftpboot/pxelinux.cfg`. There is already some configurations there that you can use as reference. To all check all options, see [SYSLINUX](https://wiki.syslinux.org/wiki/index.php?title=SYSLINUX#How_do_I_Configure_SYSLINUX.3F).
+You also need to configure the menu and boot parameters of the images that you download and put at `tftpboot/pxelinux.cfg/`. There is already some configurations there that you can use as reference. To all check all options, see [SYSLINUX](https://wiki.syslinux.org/wiki/index.php?title=SYSLINUX#How_do_I_Configure_SYSLINUX.3F).
 
 ### DNSMasq
 
-The container must run a DHCP server at your network, so it will be responsible to provide the correct network parameters to other devices. The `etc/dnsmasq.conf` must be configured accordingly. The most important are:
+The container must run a DHCP server at your local network, so it will be responsible to provide the correct network parameters to other devices. The `etc/dnsmasq.conf` must be configured accordingly. The most important are:
 ```bash
 # The range of ip address 
 dhcp-range=192.168.0.10,192.168.0.200,255.255.255.0,12h
@@ -85,12 +85,12 @@ More options see [dnsmasq.conf](https://thekelleys.org.uk/gitweb/?p=dnsmasq.git;
 
 #### Ubuntu
 
-At ubuntu, you must disable the `systemd-resolved` service (DNS):
+At ubuntu, disable the `systemd-resolved` service (DNS):
 ```bash
 $ systemctl stop systemd-resolved
 $ systemctl disable systemd-resolved
 ```
-You also must install [Docker](https://docker.com) at your machine. See the best options [here](https://docs.docker.com/engine/install/ubuntu/).
+Also install [Docker](https://docker.com) at your device. See how [here](https://docs.docker.com/engine/install/ubuntu/).
 
 ## Run Container
 
@@ -102,7 +102,7 @@ As root, type:
 ```bash
 $ docker compose up
 ```
-This will set bring up the container. If will want it to run as a daemon add the `-d` option:
+This will bring up the containers. If will want to run it as a daemon add the `-d` option:
 ```bash
 $ docker compose up -d
 ```

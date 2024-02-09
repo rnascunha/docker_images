@@ -40,8 +40,8 @@ print_all_variables() {
   done
 }
 
-validate_ip() {
-  [[ $1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]
+check_ipv4() {
+  [[ $1 =~ ^((0|[1-9]{1}|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(0|[1-9]{1}|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$ ]]
   return $?
 }
 
@@ -72,7 +72,7 @@ while getopts ":hi:s:r:c:n:l:d:t:o:" o; do
       images_dir=$OPTARG
       ;;
     s)
-      validate_ip $OPTARG
+      check_ipv4 $OPTARG
       if [ $? -eq 1 ]; then
         echo "'$OPTARG' is not a valid IP address"
         exit 3
@@ -80,7 +80,7 @@ while getopts ":hi:s:r:c:n:l:d:t:o:" o; do
       server_ip=$OPTARG
       ;;
     r)
-      validate_ip $OPTARG
+      check_ipv4 $OPTARG
       if [ $? -eq 1 ]; then
         echo "'$OPTARG' is not a valid IP address"
         exit 4
@@ -89,20 +89,20 @@ while getopts ":hi:s:r:c:n:l:d:t:o:" o; do
       ;;
     c)
       dhcp_ini=$(cut -d, -f1 -s <<< $OPTARG)
-      validate_ip $dhcp_ini
+      check_ipv4 $dhcp_ini
       if [ $? -eq 1 ]; then
         echo "'$dhcp_ini' is not a valid IP address"
         exit 5
       fi
       dhcp_end=$(cut -d, -f2 -s <<< $OPTARG)
-      validate_ip $dhcp_end
+      check_ipv4 $dhcp_end
       if [ $? -eq 1 ]; then
         echo "'$dhcp_end' is not a valid IP address"
         exit 5
       fi
       ;;
     n)
-      validate_ip $OPTARG
+      check_ipv4 $OPTARG
       if [ $? -eq 1 ]; then
         echo "'$OPTARG' is not a valid netmask address"
         exit 6
