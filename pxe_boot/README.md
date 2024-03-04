@@ -13,6 +13,8 @@ As you will run a DHCP server, you must configure your local network parameters.
 
 Open the `scripts/config.sh` script and change the following variables:
 ```bash
+# Output directory of configured files
+output_dir=out
 # The images directory that will be mapped inside de containers
 images_dir=/home/rnascunha/data/images
 # Your own IP. Must be a fixed value (as you will be a DHCP server)
@@ -30,18 +32,12 @@ lease_time="12h"
 # Local network domain
 domain=homeap
 ```
-And from the root directory (`pxe_boot`) run:
+And run:
 ```bash
 $ ./scripts/config.sh
 ```
-This will create the following files:
-```
-src/.env
-src/tftpboot/pxelinux.cfg/default
-src/tftpboot/pxelinux.cfg/clonezilla
-src/tftpboot/pxelinux.cfg/gparted
-src/etc/dnsmasq.conf
-```
+This will create the output directory (defaulted to `out`) with the configured files.
+
 You can also change the parameters via command line. To see all options:
 ```bash
 $ ./scripts/config.sh -h
@@ -59,9 +55,9 @@ config.sh -h|
 
 ### Images
 
-You need to download and unpack all the images files of the tools/OSs that you want to boot at a directory. Set this folder at the `.env` file (done by the `scrpits/config.sh` script), `IMAGES_PATH` property. This folder will be mapped inside the container to the `/tftpboot/images` directory.
+You need to download and unpack all image files of the tools/OSs that you want to boot at a directory. Set this folder at the `.env` file (done by the `scrpits/config.sh` script), `IMAGES_PATH` property. This folder will be mapped inside the container to the `/tftpboot/images` directory.
 
-You also need to configure the menu and boot parameters of the images that you download and put at `tftpboot/pxelinux.cfg/`. There is already some configurations there that you can use as reference. To all check all options, see [SYSLINUX](https://wiki.syslinux.org/wiki/index.php?title=SYSLINUX#How_do_I_Configure_SYSLINUX.3F).
+You also need to configure the menu and boot parameters of the images that you download and put at `tftpboot/pxelinux.cfg/`. There is already some configurations there that you can use as reference. To check all options, see [SYSLINUX](https://wiki.syslinux.org/wiki/index.php?title=SYSLINUX#How_do_I_Configure_SYSLINUX.3F).
 
 ### DNSMasq
 
@@ -94,9 +90,9 @@ Also install [Docker](https://docker.com) at your device. See how [here](https:/
 
 ## Run Container
 
-After everything setup, go to the `src` directory:
+After everything setup, go to the output directory (defaulted to `out`):
 ```bash
-$ cd src/
+$ cd out/
 ```
 As root, type:
 ```bash
