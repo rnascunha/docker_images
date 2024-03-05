@@ -33,6 +33,8 @@ netmask="255.255.255.0"
 lease_time="12h"
 # Local network domain
 domain=homeap
+# Fixed IPs array
+fixed_ips=()
 
 #################################################################################
 # Functions
@@ -44,10 +46,19 @@ print_all_variables() {
   for var in "${variables[@]}"; do 
     echo -e "\t${var}=${!var}"
   done
+  echo -e "\tfixed_ips=$(echo ${fixed_ips[@]})"
 }
 
 error_msg() {
   echo "ERROR! $1"
+}
+
+check_ip() {
+  validate_ipv4 $1
+  if [ $? -ne 0 ]; then
+    error_msg "$1 is not a valid IP address"
+    exit $2
+  fi
 }
 
 # Validate if network parameters make sense (are at the same network)
@@ -56,39 +67,54 @@ error_msg() {
 # returned
 validate_network_parameters() {  
   local snet=$(ipv4_network $server_ip $netmask)
-  local rnet=$(ipv4_network $router_ip $netmask)
-  local dinet=$(ipv4_network $dhcp_ini $netmask)
-  local denet=$(ipv4_network $dhcp_end $netmask)
+  local array_ip=($(ipv4_network $router_ip $netmask)
+                  $(ipv4_network $router_ip $netmask)
+                  $(ipv4_network $dhcp_ini $netmask)
+                  $(ipv4_network $dhcp_end $netmask))
 
-  if [ $snet != $rnet -o $snet != $rnet -o $snet != $dinet -o $snet != $denet ]; then
-    error_msg "Parameters are not at the same network"
-    echo "server=$snet / router=$rnet / dhcp=$dinet,$denet"
-    exit 10
-    return 1
-  fi
+  for hwip in ${fixed_ips[@]}; do 
+    local hw=$(cut -d, -f1 <<< $hwip)
+    local ip=$(cut -d, -f$(wc -c <<< ${hwip//[^,]}) <<< $hwip) 
+    validate_mac $hw
+    if [ $? -ne 0 ]; then
+      error_msg "'$hw' is not a valid MAC address"
+      exit 11
+    fi
+    check_ip $ip 12
+    array_ip+=($(ipv4_network $ip $netmask))
+  done
+
+  for ipnet in ${array_ip[@]}; do
+    if [ $snet != $ipnet ]; then
+      error_msg "Parameters are not at the same network"
+      echo "server=$snet / ip=$ipnet"
+      exit 13
+    fi
+  done
 
   return 0
 }
 
 # Help function
 help() {
-  echo -e "$(basename $0) -h|\n" \
-  "         [-i <images_dir>]\n"  \
-  "         [-s <server_ip>]\n" \
-  "         [-r <router_ip>]\n"  \
-  "         [-c <dhcp-ini>,<dhcp-end>]\n"  \
-  "         [-n <netmask>]\n"  \
-  "         [-l <lease_time>]\n"  \
-  "         [-d <domain>]\n"  \
-  "         [-t <template_dir>]\n"  \
-  "         [-o <output_dir>]"
+  echo -e "$(basename $0) -h|
+          [-i <images_dir>]
+          [-s <server_ip>]
+          [-r <router_ip>]
+          [-c <dhcp-ini>,<dhcp-end>]
+          [-n <netmask>]
+          [-l <lease_time>]
+          [-d <domain>]
+          [-t <template_dir>]
+          [-o <output_dir>]
+          [-f <hw_addr>[,<host_name>],<fixed_ip>]"
 }
 
 ##################################################################################
 # Read arguments
 ##################################################################################
 
-while getopts ":hi:s:r:c:n:l:d:t:o:" o; do
+while getopts ":hi:s:r:c:n:l:d:t:o:f:" o; do
   case "$o" in
     h)
       help
@@ -121,6 +147,9 @@ while getopts ":hi:s:r:c:n:l:d:t:o:" o; do
       ;;
     o)
       output_dir=$OPTARG
+      ;;
+    f)
+      fixed_ips+=($OPTARG)
       ;;
     \?)
       echo -e "-- Invalid option: -$OPTARG" >&2
@@ -164,36 +193,18 @@ if [ ! -d "$template_dir" ]; then
 fi
 
 # Server address
-validate_ipv4 $server_ip
-if [ $? -ne 0 ]; then
-  error_msg "'$server_ip' is not a valid IP address"
-  exit 3
-fi
-
+check_ip $server_ip 3
 # Router address
-validate_ipv4 $router_ip
-if [ $? -ne 0 ]; then
-  error_msg "'$router_ip' is not a valid IP address"
-  exit 4
-fi
+check_ip $router_ip 4
+# DHCP Range
+check_ip $dhcp_ini 5
+check_ip $dhcp_end 5
 
 # Netmask
 validate_ipv4_netmask $netmask
 if [ $? -ne 0 ]; then
   error_msg "'$netmask' is not a valid netmask address"
   exit 6
-fi
-
-# DHCP Range
-validate_ipv4 $dhcp_ini
-if [ $? -ne 0 ]; then
-  error_msg "'$dhcp_ini' is not a valid IP address"
-  exit 5
-fi
-validate_ipv4 $dhcp_end
-if [ $? -ne 0 ]; then
-  error_msg "'$dhcp_end' is not a valid IP address"
-  exit 5
 fi
 
 validate_network_parameters
@@ -225,6 +236,10 @@ configure_file() {
   sed -e $cmd $file_full > $output_full
 }
 
+add_fixed_host() {
+  echo "dhcp-host=$1,infinite" >> "$output_dir/etc/dnsmasq.conf"
+}
+
 ########################################
 # Main loop
 ########################################
@@ -232,6 +247,12 @@ configure_file() {
 # Copying all files to the output directory
 cp -rf $source_dir/. $output_dir
 
+# Configuring template files
 for file in "${files[@]}"; do
   configure_file $file
+done
+
+# Adding fixed hosts IPs
+for fip in ${fixed_ips[@]}; do
+  add_fixed_host $fip
 done
