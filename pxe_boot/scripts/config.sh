@@ -1,6 +1,6 @@
 #!/bin/bash
 #################################################################################
-# Configure files
+# Create configuration files
 # Author Rafael Cunha <rnascunha@gmail.com>
 #################################################################################
 
@@ -105,7 +105,6 @@ help() {
           [-n <netmask>]
           [-l <lease_time>]
           [-d <domain>]
-          [-t <template_dir>]
           [-o <output_dir>]
           [-f <hw_addr>[,<host_name>],<fixed_ip>]"
 }

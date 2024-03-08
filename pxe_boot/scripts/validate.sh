@@ -3,7 +3,7 @@
 # A set o bash function to validade/calculate network parameters
 #
 # Author: Rafael Cunha <rnascunha@gmail.com>
-# Date: 10/02/2024
+# Date: 08/03/2024
 ##################################################################
 
 #######################################################
@@ -13,8 +13,13 @@ binary_to_number() {
   echo -n $((2#$1))
 }
 
+# see: https://stackoverflow.com/a/69247722
 number_to_binary() {
-  echo "obase=2; ibase=10; $1" | bc
+    local n bit
+    for (( n=$1 ; n > 0 ; n >>= 1 )); do
+      bit="$(( n&1 ))$bit"
+    done
+    echo $bit
 }
 
 number_to_ipv4() {
@@ -22,7 +27,12 @@ number_to_ipv4() {
 }
 
 ipv4_to_binary() {
-  echo "obase=2; ibase=10; ${1//./;}" | bc | xargs -I'{}' printf "%08d" '{}'
+  local result
+  for part in ${1//./ }; do
+    local t="00000000"$(number_to_binary $part)
+    result=$result${t: -8:8}
+  done
+  echo $result
 }
 
 binary_to_ipv4() {
@@ -163,7 +173,7 @@ broadcast_ipv4_suffix() {
 #######################################################
 # Calculate the ipv4 of a network preffix
 #
-# Call: ipv4_network <ipv4> <netmask>
+# Call: broadcast_ipv4_suffix <ipv4> <netmask>
 # Return: Network ipv4 suffix
 # Return status: 0: success, 1: error
 #######################################################
